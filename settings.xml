@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    项目专用 Maven settings.xml
+    用途：绕过全局 Nexus mirror（localhost:8088），直接访问 JetBrains Maven 仓库
+    使用方式：mvn -s settings.xml clean package
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+
+    <!-- 本地仓库路径（与全局保持一致） -->
+    <localRepository>D:/Maven_repository_file</localRepository>
+
+    <profiles>
+        <profile>
+            <id>jetbrains-repos</id>
+            <repositories>
+                <repository>
+                    <id>jetbrains-releases</id>
+                    <url>https://www.jetbrains.com/intellij-repository/releases</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>jetbrains-third-party</id>
+                    <url>https://cache-redirector.jetbrains.com/intellij-dependencies</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>jetbrains-releases</id>
+                    <url>https://www.jetbrains.com/intellij-repository/releases</url>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>jetbrains-repos</activeProfile>
+    </activeProfiles>
+
+    <!-- 注意：此文件不配置任何 mirror，确保 JetBrains 仓库不被 Nexus 重定向 -->
+
+</settings>

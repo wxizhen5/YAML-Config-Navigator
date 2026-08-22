@@ -1,0 +1,112 @@
+<idea-plugin>
+    <id>com.wangxz.yaml-config-navigator</id>
+    <name>YAML Config Navigator</name>
+    <version>1.0.0</version>
+    <vendor email="wangxz@example.com" url="https://github.com/wangxz">wangxz</vendor>
+
+    <!-- 兼容的 IDE 版本范围：2024.1 (241) 到 2025.x (251.*) -->
+    <idea-version since-build="241" until-build="251.*"/>
+
+    <icon>META-INF/pluginIcon.svg</icon>
+
+    <!-- 版本更新说明 -->
+    <change-notes><![CDATA[
+        <h3>v1.0.0</h3>
+        <ul>
+            <li>首次发布</li>
+            <li>支持 YAML key → Python 字段双向跳转</li>
+            <li>支持 @configuration_properties(prefix="xxx") 注解</li>
+            <li>支持嵌套配置类和 @dataclass</li>
+            <li>支持点击 prefix 值跳转到 yml 顶级 key</li>
+        </ul>
+    ]]></change-notes>
+
+    <description><![CDATA[
+        <h2>中文</h2>
+        <p>实现 YAML 配置文件与 Python 配置类之间的<strong>双向跳转</strong>，类似 Spring Boot 的配置导航体验。</p>
+
+        <h3>功能特性</h3>
+        <ul>
+            <li>在 <code>application.yml</code> 中 <code>Ctrl+B</code> / <code>Ctrl+Click</code> 跳转到对应 Python 字段</li>
+            <li>在 Python 配置类字段行号栏点击图标，反向跳转到 yml 对应位置</li>
+            <li>支持嵌套配置类（如 <code>user.address.city</code>）</li>
+            <li>支持 <code>@dataclass</code> 注解的配置类</li>
+        </ul>
+
+        <h3>使用步骤</h3>
+        <ol>
+            <li>在 Python 配置类上添加 <code>@configuration_properties(prefix="xxx")</code> 注解</li>
+            <li>（可选）添加 <code>@dataclass</code> 注解，字段使用 <code>name: str = None</code> 格式</li>
+            <li>在项目中创建 <code>application.yml</code>，定义对应的配置项</li>
+            <li>在 yml 的 key 上按 <code>Ctrl+B</code> 即可跳转到 Python 字段定义</li>
+            <li>在 Python 字段左侧行号栏点击导航图标，即可跳转到 yml 对应位置</li>
+        </ol>
+
+        <h3>示例</h3>
+        <pre>@component
+@configuration_properties(prefix="user")
+@dataclass
+class UserConfig:
+    name: str = None
+    age: int = None</pre>
+        <p>对应 yml 配置：</p>
+        <pre>user:
+  name: "张三"
+  age: 25</pre>
+
+        <hr>
+
+        <h2>English</h2>
+        <p>Enables <strong>bidirectional navigation</strong> between YAML config files and Python configuration classes, similar to Spring Boot's config navigation experience.</p>
+
+        <h3>Features</h3>
+        <ul>
+            <li><code>Ctrl+B</code> / <code>Ctrl+Click</code> on a key in <code>application.yml</code> to jump to the corresponding Python field</li>
+            <li>Click the gutter icon next to a Python config field to navigate back to the yml entry</li>
+            <li>Supports nested config classes (e.g. <code>user.address.city</code>)</li>
+            <li>Supports <code>@dataclass</code>-annotated config classes</li>
+        </ul>
+
+        <h3>Usage</h3>
+        <ol>
+            <li>Add <code>@configuration_properties(prefix="xxx")</code> annotation to your Python config class</li>
+            <li>(Optional) Add <code>@dataclass</code> and define fields as <code>name: str = None</code></li>
+            <li>Create <code>application.yml</code> in your project with matching config entries</li>
+            <li>Press <code>Ctrl+B</code> on a yml key to jump to the Python field definition</li>
+            <li>Click the navigation icon in the gutter next to a Python field to jump to the yml entry</li>
+        </ol>
+
+        <h3>Example</h3>
+        <pre>@component
+@configuration_properties(prefix="user")
+@dataclass
+class UserConfig:
+    name: str = None
+    age: int = None</pre>
+        <p>Corresponding yml config:</p>
+        <pre>user:
+  name: "John"
+  age: 25</pre>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>PythonCore</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- YAML key → Python 字段 跳转 -->
+        <psi.referenceContributor
+            language="yaml"
+            implementation="com.example.yamlconfig.YamlConfigReferenceContributor"/>
+
+        <!-- Python @configuration_properties(prefix="xxx") → YAML 顶级 key 跳转 -->
+        <psi.referenceContributor
+            language="Python"
+            implementation="com.example.yamlconfig.PythonPrefixReferenceContributor"/>
+
+        <!-- Python 字段 → YAML key 行号标记 -->
+        <codeInsight.lineMarkerProvider
+            language="Python"
+            implementationClass="com.example.yamlconfig.PythonFieldLineMarkerProvider"/>
+    </extensions>
+</idea-plugin>
